@@ -23,4 +23,6 @@ omf install foxfish
 
 ## foxfetch.fish
 
+Requires fish 3.1 or higher.
+
 This can be called with an optional `-w` or `--foxwhale` argument that prints an ASCII foxwhale.
