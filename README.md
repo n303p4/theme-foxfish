@@ -23,6 +23,6 @@ omf install foxfish
 
 ## foxfetch.fish
 
-Requires fish 3.1 or higher.
+Requires fish 3.1 or higher. Memory usage only works on Linux for now.
 
 This can be called with an optional `-w` or `--foxwhale` argument that prints an ASCII foxwhale.

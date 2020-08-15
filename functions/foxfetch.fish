@@ -1,7 +1,7 @@
 #!/usr/bin/fish
 # foxfetch
 # Displays a minimal amount of info about the system
-# Works across multiple distros
+# Works across multiple distros, and partially on macOS
 
 function foxfetch_macos_name
     set -l software_version (sw_vers)
