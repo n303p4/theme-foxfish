@@ -3,6 +3,14 @@
 # Displays a minimal amount of info about the system
 # Works across multiple distros
 
+function foxfetch_macos_name
+    set -l software_version (sw_vers)
+    set -l os_name (echo $software_version[1] | cut -f2 -d : | string trim)
+    set -l os_version (echo $software_version[2] | cut -f2 -d : | string trim)
+    echo -s $os_name " " $os_version
+end
+
+
 function foxfetch_os_release_pretty_name
     cat /etc/os-release | grep PRETTY_NAME | cut -f2 -d \"
 end
@@ -56,7 +64,9 @@ function foxfetch
     else
         echo -n " Welcome to "
     end
-    if test -e /etc/fedora-release
+    if [ (uname) = "Darwin" ]
+        foxfetch_macos_name
+    else if test -e /etc/fedora-release
         cat /etc/fedora-release
     else if test -e /etc/os-release
         foxfetch_os_release_pretty_name
@@ -69,8 +79,10 @@ function foxfetch
     # Print kernel name, version, and architecture
     echo -s " " (uname -srm)
 
-    # Get and print memory usage
-    foxfetch_mem_usage_in_mib -p
+    # Get and print memory usage (currently broken on macOS)
+    if [ (uname) = "Linux" ]
+        foxfetch_mem_usage_in_mib -p
+    end
 
     # foxwhale
     if contains -- -w $argv; or contains -- --foxwhale $argv
