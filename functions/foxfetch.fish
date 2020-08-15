@@ -64,14 +64,14 @@ function foxfetch
     else
         echo -n " Welcome to "
     end
-    if [ (uname) = "Darwin" ]
-        foxfetch_macos_name
-    else if test -e /etc/fedora-release
+    if test -e /etc/fedora-release  # Fedora
         cat /etc/fedora-release
-    else if test -e /etc/os-release
+    else if test -e /etc/os-release  # distros with systemd
         foxfetch_os_release_pretty_name
-    else if which lsb_release &> /dev/null
+    else if which lsb_release &> /dev/null  # some other distros
         foxfetch_lsb_release_description
+    else if which sw_vers &> /dev/null  # macOS
+        foxfetch_macos_name
     else
         echo "an unrecognized OS"
     end
