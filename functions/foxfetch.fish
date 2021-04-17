@@ -20,9 +20,11 @@ function foxfetch_lsb_release_description
     lsb_release -d | cut -f2 -d : | string trim
 end
 
+
 function foxfetch_cpu_model
 	cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | sed "s/([^)]*)//g;s/ CPU//g" | string trim
 end
+
 
 function foxfetch_cpu_cores_threads
 	set -l cores (cat /proc/cpuinfo | grep -m 1 "cpu cores" | cut -f2 -d : | string trim)
@@ -56,6 +58,7 @@ function foxfetch_mem_usage_in_mib
     end
     echo -s $prefixspace "Memory: " (math "round($mem_used/1024)") " MiB / " (math "round($mem_total/1024)") " MiB"
 end
+
 
 function foxfetch_gpu_model
 	glxinfo | grep Device | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
@@ -111,6 +114,7 @@ function foxfetch
         echo " \_______________/ \__\_/"
     end
 end
+
 
 if not status --is-interactive
     foxfetch
