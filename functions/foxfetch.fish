@@ -20,6 +20,16 @@ function foxfetch_lsb_release_description
     lsb_release -d | cut -f2 -d : | string trim
 end
 
+function foxfetch_cpu_model
+	cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | sed "s/([^)]*)//g;s/ CPU//g" | string trim
+end
+
+function foxfetch_cpu_cores_threads
+	set -l cores (cat /proc/cpuinfo | grep -m 1 "cpu cores" | cut -f2 -d : | string trim)
+	set -l threads (cat /proc/cpuinfo | grep "cpu cores" | wc -l)
+	echo -s $cores "C/" $threads "T"
+end
+
 
 function foxfetch_kib_value
     string replace "kB" "" $argv[1] | string trim
@@ -44,7 +54,11 @@ function foxfetch_mem_usage_in_mib
     if contains -- -p $argv
         set prefixspace " "
     end
-    echo -s $prefixspace "Memory usage: " (math "round($mem_used/1024)") " MiB / " (math "round($mem_total/1024)") " MiB"
+    echo -s $prefixspace "Memory: " (math "round($mem_used/1024)") " MiB / " (math "round($mem_total/1024)") " MiB"
+end
+
+function foxfetch_gpu_model
+	glxinfo | grep Device | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
 end
 
 
@@ -79,8 +93,10 @@ function foxfetch
     # Print kernel name, version, and architecture
     echo -s " " (uname -srm)
 
-    # Get and print memory usage (currently broken on macOS)
+    # Get and print CPU model, GPU model, and memory usage (Linux only)
     if [ (uname) = "Linux" ]
+		echo -s " CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
+		echo -s " GPU: " (foxfetch_gpu_model)
         foxfetch_mem_usage_in_mib -p
     end
 
