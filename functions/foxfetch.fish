@@ -22,14 +22,14 @@ end
 
 
 function foxfetch_cpu_model
-	cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | sed "s/([^)]*)//g;s/ CPU//g;s/[^\ ]*-Core Processor//g" | string trim
+    cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | sed "s/([^)]*)//g;s/ CPU//g;s/[^\ ]*-Core Processor//g" | string trim
 end
 
 
 function foxfetch_cpu_cores_threads
-	set -l cores (cat /proc/cpuinfo | grep -m 1 "cpu cores" | cut -f2 -d : | string trim)
-	set -l threads (cat /proc/cpuinfo | grep "cpu cores" | wc -l)
-	echo -s $cores "C/" $threads "T"
+    set -l cores (cat /proc/cpuinfo | grep -m 1 "cpu cores" | cut -f2 -d : | string trim)
+    set -l threads (cat /proc/cpuinfo | grep "cpu cores" | wc -l)
+    echo -s $cores "C/" $threads "T"
 end
 
 
@@ -99,11 +99,11 @@ function foxfetch
     # Get and print CPU model, GPU model, and memory usage (Linux only)
     if [ (uname) = "Linux" ]
         if contains -- -c $argv
-		    echo -s " CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
+            echo -s " CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
         end
-		if glxinfo &> /dev/null; and contains -- -g $argv
-			echo -s " GPU: " (foxfetch_gpu_model)
-		end
+        if glxinfo &> /dev/null; and contains -- -g $argv
+            echo -s " GPU: " (foxfetch_gpu_model)
+        end
         foxfetch_mem_usage_in_mib -p
     end
 
