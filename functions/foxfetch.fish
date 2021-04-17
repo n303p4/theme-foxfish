@@ -96,7 +96,9 @@ function foxfetch
     # Get and print CPU model, GPU model, and memory usage (Linux only)
     if [ (uname) = "Linux" ]
 		echo -s " CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
-		echo -s " GPU: " (foxfetch_gpu_model)
+		if [ (which glxinfo) ]
+			echo -s " GPU: " (foxfetch_gpu_model)
+		end
         foxfetch_mem_usage_in_mib -p
     end
 
