@@ -62,7 +62,7 @@ end
 
 function foxfetch_gpu_model
 	set -l gpu_model (glxinfo -B | grep Device)
-    if gpu_model
+    if $gpu_model
         echo $gpu_model | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
     else
         echo "Could not open display"
