@@ -62,10 +62,8 @@ end
 
 function foxfetch_gpu_model
 	set -l gpu_model (glxinfo -B | grep Device)
-    if $gpu_model
-        echo $gpu_model | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
-    else
-        echo "Could not open display"
+    if [ -n "$gpu_model" ]
+        echo "$gpu_model" | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
     end
 end
 
@@ -107,7 +105,10 @@ function foxfetch
             echo -s " CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
         end
         if which glxinfo &> /dev/null; and contains -- -g $argv
-            echo -s " GPU: " (foxfetch_gpu_model)
+            set -l gpu_model (foxfetch_gpu_model)
+            if [ -n "$gpu_model" ]
+                echo -s " GPU: $gpu_model"
+            end
         end
         foxfetch_mem_usage_in_mib -p
     end
