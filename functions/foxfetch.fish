@@ -53,10 +53,7 @@ function foxfetch_mem_usage_in_mib
                 set mem_used (math $mem_used-(foxfetch_kib_value $keyvaluepair[2]))
         end
     end
-    if contains -- -p $argv
-        set prefixspace " "
-    end
-    echo -s $prefixspace "Memory: " (math "round($mem_used/1024)") " MiB / " (math "round($mem_total/1024)") " MiB"
+    echo -s "Memory: " (math "round($mem_used/1024)") " MiB / " (math "round($mem_total/1024)") " MiB"
 end
 
 
@@ -68,21 +65,54 @@ function foxfetch_gpu_model
 end
 
 
+function foxwhale
+    set -l prefix $argv[1]
+    set -l fw " /\_/\__________   ____" "/               \_/  / \\" "| . .                \  \\" "|  w             _   /  /" "\_______________/ \__\_/"
+    printf "$prefix%s\n" $fw
+end
+
+
 function foxfetch
-    set -l bold (tput bold)
-    set -l brwhite (set_color brwhite)
-    set -l bg_magenta (set_color -b magenta)
-    set -l normal (tput sgr0)(set_color normal)
+    # Perform checks on arguments
+    argparse t/trim d/plaindate c/cpuinfo g/gpuinfo m/meminfo w/foxwhale l/lolwhale -- $argv; or return
+
+    if set -q _flag_lolwhale; and not which lolcat &> /dev/null
+        echo -s $_flag_lolwhale " requires lolcat to be installed"
+        return
+    end
+    if [ (uname) != "Linux" ]
+        if set -q _flag_cpuinfo; or set -q _flag_meminfo
+            echo "CPU and memory info only work on Linux"
+            return
+        end
+    end
+    if set -q _flag_gpuinfo; and not which glxinfo &> /dev/null
+        echo "GPU info requires glxinfo to be installed"
+        return
+    end
+
+    set -l bookstand " "
+    if set -q _flag_trim
+        set bookstand ""
+    end
 
     # The date
-    echo -s $bg_magenta $brwhite " " (date +"%A, %B %d, %Y") " " $normal
+    if set -q _flag_plaindate
+        echo -s $bookstand (date +"%A, %B %d, %Y")
+    else
+        set -l brwhite (set_color brwhite)
+        set -l bg_magenta (set_color -b magenta)
+        set -l normal (tput sgr0)(set_color normal)
+
+        echo -s $bg_magenta $brwhite $bookstand (date +"%A, %B %d, %Y") $bookstand $normal
+    end
 
     # Print username@hostname on OS version
     # If SSHed, only print hostname on OS version
     if not test -n "$SSH_TTY"
-        echo -n -s " " (whoami)@(hostname) " on "
+        echo -n -s $bookstand (whoami)@(hostname) " on "
     else
-        echo -n " Welcome to "
+        echo -n -s $bookstand "Welcome to "
     end
     if test -e /etc/fedora-release  # Fedora
         cat /etc/fedora-release
@@ -97,33 +127,31 @@ function foxfetch
     end
 
     # Print kernel name, version, and architecture
-    echo -s " " (uname -srm)
+    echo -s $bookstand (uname -srm)
 
     # Get and print CPU model, GPU model, and memory usage (Linux only)
-    if [ (uname) = "Linux" ]
-        if contains -- -c $argv
-            echo -s " CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
+    if set -q _flag_cpuinfo
+        echo -s $bookstand "CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
+    end
+    if set -q _flag_gpuinfo
+        set -l gpu_model (foxfetch_gpu_model)
+        if [ -n "$gpu_model" ]
+            echo -s $bookstand "GPU: " $gpu_model
         end
-        if which glxinfo &> /dev/null; and contains -- -g $argv
-            set -l gpu_model (foxfetch_gpu_model)
-            if [ -n "$gpu_model" ]
-                echo -s " GPU: $gpu_model"
-            end
-        end
-        foxfetch_mem_usage_in_mib -p
+    end
+    if set -q _flag_meminfo
+        echo -s $bookstand (foxfetch_mem_usage_in_mib)
     end
 
     # foxwhale
-    if contains -- -w $argv; or contains -- --foxwhale $argv
-        echo "  /\_/\__________   ____"
-        echo " /               \_/  / \\"
-        echo " | . .                \  \\"
-        echo " |  w             _   /  /"
-        echo " \_______________/ \__\_/"
+    if set -q _flag_lolwhale
+        foxwhale $bookstand | lolcat -r
+    else if set -q _flag_foxwhale
+        foxwhale $bookstand
     end
 end
 
 
 if not status --is-interactive
-    foxfetch
+    foxfetch $argv
 end

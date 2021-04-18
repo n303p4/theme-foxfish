@@ -27,6 +27,10 @@ Requires fish 3.1 or higher. Memory usage only works on Linux for now.
 
 ### Optional arguments
 
-* `-c`: Prints CPU info.
-* `-g`: Prints GPU info.
-* `-w` or `--foxwhale`: Prints an ASCII foxwhale.
+* `-d`, `--plaindate`: Date is printed without magenta background.
+* `-t`, `--trim`: Leading and trailing spaces are trimmed.
+* `-c`, `--cpuinfo`: Prints CPU info.
+* `-g`, `--gpuinfo`: Prints GPU info.
+* `-m`, `--meminfo`: Prints memory info.
+* `-w`, `--foxwhale`: Prints an ASCII foxwhale.
+* `-l`, `--lolwhale`: The foxwhale is piped through `lolcat` if available.
