@@ -23,14 +23,20 @@ omf install foxfish
 
 ## foxfetch.fish
 
-Requires fish 3.1 or higher. Memory usage only works on Linux for now.
+Requires fish 3.1 or higher. Some functions only work on Linux at the moment.
 
 ### Optional arguments
 
-* `-d`, `--plaindate`: Date is printed without magenta background.
-* `-t`, `--trim`: Leading and trailing spaces are trimmed.
-* `-c`, `--cpuinfo`: Prints CPU info.
-* `-g`, `--gpuinfo`: Prints GPU info.
-* `-m`, `--meminfo`: Prints memory info.
-* `-w`, `--foxwhale`: Prints an ASCII foxwhale.
-* `-l`, `--lolwhale`: The foxwhale is piped through `lolcat` if available.
+* `-d`, `--plaindate`: Date is printed without magenta background
+* `-t`, `--trim`: Leading and trailing spaces are trimmed
+* `--disable`: Disable output. Valid options are:
+```
+date
+host
+uname
+cpu
+gpu
+memory
+```
+* `-w`, `--foxwhale`: Prints an ASCII foxwhale
+* `-l`, `--lolwhale`: The foxwhale is piped through `lolcat` if available

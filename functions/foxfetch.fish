@@ -74,73 +74,72 @@ end
 
 function foxfetch
     # Perform checks on arguments
-    argparse t/trim d/plaindate c/cpuinfo g/gpuinfo m/meminfo w/foxwhale l/lolwhale -- $argv; or return
+    argparse t/trim d/plaindate disable=+ w/foxwhale l/lolwhale -- $argv; or return
 
     if set -q _flag_lolwhale; and not which lolcat &> /dev/null
         echo -s $_flag_lolwhale " requires lolcat to be installed"
         return
     end
-    if [ (uname) != "Linux" ]
-        if set -q _flag_cpuinfo; or set -q _flag_meminfo
-            echo "CPU and memory info only work on Linux"
-            return
-        end
-    end
-    if set -q _flag_gpuinfo; and not which glxinfo &> /dev/null
-        echo "GPU info requires glxinfo to be installed"
-        return
-    end
 
+    # Enable/disable leading/trailing spaces
     set -l bookstand " "
     if set -q _flag_trim
         set bookstand ""
     end
 
     # The date
-    if set -q _flag_plaindate
-        echo -s $bookstand (date +"%A, %B %d, %Y")
-    else
-        set -l brwhite (set_color brwhite)
-        set -l bg_magenta (set_color -b magenta)
-        set -l normal (tput sgr0)(set_color normal)
+    if not contains -- date $_flag_disable
+        if set -q _flag_plaindate
+            echo -s $bookstand (date +"%A, %B %d, %Y")
+        else
+            set -l brwhite (set_color brwhite)
+            set -l bg_magenta (set_color -b magenta)
+            set -l normal (tput sgr0)(set_color normal)
 
-        echo -s $bg_magenta $brwhite $bookstand (date +"%A, %B %d, %Y") $bookstand $normal
+            echo -s $bg_magenta $brwhite $bookstand (date +"%A, %B %d, %Y") $bookstand $normal
+        end
     end
 
     # Print username@hostname on OS version
     # If SSHed, only print hostname on OS version
-    if not test -n "$SSH_TTY"
-        echo -n -s $bookstand (whoami)@(hostname) " on "
-    else
-        echo -n -s $bookstand "Welcome to "
-    end
-    if test -e /etc/fedora-release  # Fedora
-        cat /etc/fedora-release
-    else if test -e /etc/os-release  # distros with systemd
-        foxfetch_os_release_pretty_name
-    else if which lsb_release &> /dev/null  # some other distros
-        foxfetch_lsb_release_description
-    else if which sw_vers &> /dev/null  # macOS
-        foxfetch_macos_name
-    else
-        echo "an unrecognized OS"
+    if not contains -- host $_flag_disable
+        if not test -n "$SSH_TTY"
+            echo -n -s $bookstand (whoami)@(hostname) " on "
+        else
+            echo -n -s $bookstand "Welcome to "
+        end
+        if test -e /etc/fedora-release  # Fedora
+            cat /etc/fedora-release
+        else if test -e /etc/os-release  # distros with systemd
+            foxfetch_os_release_pretty_name
+        else if which lsb_release &> /dev/null  # some other distros
+            foxfetch_lsb_release_description
+        else if which sw_vers &> /dev/null  # macOS
+            foxfetch_macos_name
+        else
+            echo "an unrecognized OS"
+        end
     end
 
     # Print kernel name, version, and architecture
-    echo -s $bookstand (uname -srm)
+    if not contains -- uname $_flag_disable
+        echo -s $bookstand (uname -srm)
+    end
 
     # Get and print CPU model, GPU model, and memory usage (Linux only)
-    if set -q _flag_cpuinfo
-        echo -s $bookstand "CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
-    end
-    if set -q _flag_gpuinfo
-        set -l gpu_model (foxfetch_gpu_model)
-        if [ -n "$gpu_model" ]
-            echo -s $bookstand "GPU: " $gpu_model
+    if [ (uname) = "Linux" ]
+        if not contains -- cpu $_flag_disable
+            echo -s $bookstand "CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
         end
-    end
-    if set -q _flag_meminfo
-        echo -s $bookstand (foxfetch_mem_usage_in_mib)
+        if not contains -- gpu $_flag_disable; and which glxinfo &> /dev/null
+            set -l gpu_model (foxfetch_gpu_model)
+            if [ -n "$gpu_model" ]
+                echo -s $bookstand "GPU: " $gpu_model
+            end
+        end
+        if not contains -- memory $_flag_disable
+            echo -s $bookstand (foxfetch_mem_usage_in_mib)
+        end
     end
 
     # foxwhale
