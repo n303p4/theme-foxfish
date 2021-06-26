@@ -7,6 +7,7 @@ set __foxfish_last_command_failed :\<
 set __foxfish_glyph_flag \u2691
 set __foxfish_root_prompt 8\<
 
+
 function _git_branch_name
     echo (command git symbolic-ref HEAD 2> /dev/null | sed -e 's|^refs/heads/||')
 end
@@ -37,12 +38,10 @@ function fish_prompt
     set -l cwd $brwhite(prompt_pwd)
     set -l uid (id -u $USER)
 
-
     # Show a 8< for root privileges
     if [ $uid -eq 0 ]
         echo -n -s $bg_yellow $black " $__foxfish_root_prompt " $normal
     end
-
 
     # Display whether I am SSHed or not
     if test -n "$SSH_TTY"
