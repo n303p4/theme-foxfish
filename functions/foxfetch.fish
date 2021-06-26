@@ -82,21 +82,21 @@ function foxfetch
     end
 
     # Enable/disable leading/trailing spaces
-    set -l bookstand " "
+    set -l bookend " "
     if set -q _flag_trim
-        set bookstand ""
+        set bookend ""
     end
 
     # The date
     if not contains -- date $_flag_disable
         if set -q _flag_plaindate
-            echo -s $bookstand (date +"%A, %B %d, %Y")
+            echo -s $bookend (date +"%A, %B %d, %Y")
         else
             set -l brwhite (set_color brwhite)
             set -l bg_magenta (set_color -b magenta)
             set -l normal (tput sgr0)(set_color normal)
 
-            echo -s $bg_magenta $brwhite $bookstand (date +"%A, %B %d, %Y") $bookstand $normal
+            echo -s $bg_magenta $brwhite $bookend (date +"%A, %B %d, %Y") $bookend $normal
         end
     end
 
@@ -104,9 +104,9 @@ function foxfetch
     # If SSHed, only print hostname on OS version
     if not contains -- host $_flag_disable
         if not test -n "$SSH_TTY"
-            echo -n -s $bookstand (whoami)@(hostname) " on "
+            echo -n -s $bookend (whoami)@(hostname) " on "
         else
-            echo -n -s $bookstand "Welcome to "
+            echo -n -s $bookend "Welcome to "
         end
         if test -e /etc/fedora-release  # Fedora
             cat /etc/fedora-release
@@ -123,30 +123,30 @@ function foxfetch
 
     # Print kernel name, version, and architecture
     if not contains -- uname $_flag_disable
-        echo -s $bookstand (uname -srm)
+        echo -s $bookend (uname -srm)
     end
 
     # Get and print CPU model, GPU model, and memory usage (Linux only)
     if [ (uname) = "Linux" ]
         if not contains -- cpu $_flag_disable
-            echo -s $bookstand "CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
+            echo -s $bookend "CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
         end
         if not contains -- gpu $_flag_disable; and which glxinfo &> /dev/null
             set -l gpu_model (foxfetch_gpu_model)
             if [ -n "$gpu_model" ]
-                echo -s $bookstand "GPU: " $gpu_model
+                echo -s $bookend "GPU: " $gpu_model
             end
         end
         if not contains -- memory $_flag_disable
-            echo -s $bookstand (foxfetch_mem_usage_in_mib)
+            echo -s $bookend (foxfetch_mem_usage_in_mib)
         end
     end
 
     # foxwhale
     if set -q _flag_lolwhale
-        foxwhale $bookstand | lolcat -r
+        foxwhale $bookend | lolcat -r
     else if set -q _flag_foxwhale
-        foxwhale $bookstand
+        foxwhale $bookend
     end
 end
 
