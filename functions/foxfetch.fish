@@ -22,7 +22,8 @@ end
 
 
 function foxfetch_cpu_model
-    cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | sed "s/([^)]*)//g;s/ CPU//g;s/[^\ ]*-Core Processor//g" | string trim
+    cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | \
+        sed "s/([^)]*)//g;s/ CPU//g;s/[^\ ]*-Core Processor//g" | string trim
 end
 
 
@@ -53,7 +54,8 @@ function foxfetch_mem_usage_in_mib
                 set mem_used (math $mem_used-(foxfetch_kib_value $keyvaluepair[2]))
         end
     end
-    echo -s "Memory: " (math "round($mem_used/1024)") " MiB / " (math "round($mem_total/1024)") " MiB"
+    echo -s "Memory: " (math "round($mem_used/1024)") " MiB / " \
+                       (math "round($mem_total/1024)") " MiB"
 end
 
 
@@ -67,7 +69,11 @@ end
 
 function foxwhale
     set -l prefix $argv[1]
-    set -l fw " /\_/\__________   ____" "/               \_/  / \\" "| . .                \  \\" "|  w             _   /  /" "\_______________/ \__\_/"
+    set -l fw " /\_/\__________   ____" \
+              "/               \_/  / \\" \
+              "| . .                \  \\" \
+              "|  w             _   /  /" \
+              "\_______________/ \__\_/"
     printf "$prefix%s\n" $fw
 end
 
