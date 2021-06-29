@@ -2,10 +2,10 @@
 # A fish theme with :3 in mind.
 # Based on ocean, a fish theme with ocean in mind.
 
-set __foxfish_last_command_success :3
-set __foxfish_last_command_failed :\<
-set __foxfish_glyph_flag \u2691
-set __foxfish_root_prompt 8\<
+set __foxfish_last_command_success ":3"
+set __foxfish_last_command_failed ":<"
+set __foxfish_glyph_flag "⚑"
+set __foxfish_root_prompt "8<"
 
 
 function _git_branch_name
