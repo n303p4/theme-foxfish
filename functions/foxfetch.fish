@@ -4,9 +4,8 @@
 # Works across multiple distros, and partially on macOS
 
 function foxfetch_macos_name
-    set -l software_version (sw_vers)
-    set -l os_name (echo $software_version[1] | cut -f2 -d : | string trim)
-    set -l os_version (echo $software_version[2] | cut -f2 -d : | string trim)
+    set -l os_name (sw_vers -productName)
+    set -l os_version (sw_vers -productVersion)
     echo -s $os_name " " $os_version
 end
 
