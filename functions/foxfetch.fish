@@ -61,7 +61,7 @@ end
 
 function foxfetch_gpu_model
     set -l gpu_model (glxinfo -B 2> /dev/null | grep Device)
-    if [ -n "$gpu_model" ]
+    if test -n "$gpu_model"
         echo "$gpu_model" | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
     end
 end
@@ -107,9 +107,9 @@ function foxfetch
     end
 
     # Print username@hostname on OS version
-    # If SSHed, only print hostname on OS version
+    # If SSHed, only print OS version
     if not contains -- host $_flag_disable
-        if not test -n "$SSH_TTY"
+        if test -z "$SSH_TTY"
             echo -n -s $bookend (whoami)@(hostname) " on "
         else
             echo -n -s $bookend "Welcome to "
@@ -139,7 +139,7 @@ function foxfetch
         end
         if not contains -- gpu $_flag_disable; and which glxinfo &> /dev/null
             set -l gpu_model (foxfetch_gpu_model)
-            if [ -n "$gpu_model" ]
+            if test -n "$gpu_model"
                 echo -s $bookend "GPU: " $gpu_model
             end
         end
