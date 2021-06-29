@@ -21,16 +21,22 @@ function foxfetch_lsb_release_description
 end
 
 
-function foxfetch_cpu_model
+function foxfetch_cpu_model_linux
     cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | \
         sed "s/([^)]*)//g;s/ CPU//g;s/[^\ ]*-Core Processor//g" | string trim
 end
 
 
-function foxfetch_cpu_cores_threads
+function foxfetch_cpu_cores_threads_linux
     set -l cores (cat /proc/cpuinfo | grep -m 1 "cpu cores" | cut -f2 -d : | string trim)
     set -l threads (cat /proc/cpuinfo | grep "cpu cores" | wc -l)
     echo -s $cores "C/" $threads "T"
+end
+
+
+function foxfetch_cpu_model_macos
+    sysctl -n machdep.cpu.brand_string | \
+        sed "s/([^)]*)//g;s/ CPU//g;s/[^\ ]*-Core Processor//g" | string trim
 end
 
 
@@ -39,30 +45,43 @@ function foxfetch_kib_value
 end
 
 
-function foxfetch_mem_usage_in_mib
+function foxfetch_mem_usage_linux
     set -l mem_used 0
     for line in (cat /proc/meminfo)
         set -l keyvaluepair (string split : $line)
         switch $keyvaluepair[1]
-            case MemTotal
-                set -l value (foxfetch_kib_value $keyvaluepair[2])
-                set mem_used (math $mem_used+$value)
-                set mem_total $value
-            case Shmem
-                set mem_used (math $mem_used+(foxfetch_kib_value $keyvaluepair[2]))
-            case MemFree Buffers Cached SReclaimable
-                set mem_used (math $mem_used-(foxfetch_kib_value $keyvaluepair[2]))
+        case MemTotal
+            set -l value (foxfetch_kib_value $keyvaluepair[2])
+            set mem_used (math $mem_used+$value)
+            set mem_total $value
+        case Shmem
+            set mem_used (math $mem_used+(foxfetch_kib_value $keyvaluepair[2]))
+        case MemFree Buffers Cached SReclaimable
+            set mem_used (math $mem_used-(foxfetch_kib_value $keyvaluepair[2]))
         end
     end
-    echo -s "Memory: " (math "round($mem_used/1024)") " MiB / " \
-                       (math "round($mem_total/1024)") " MiB"
+    echo -s (math "round($mem_used/1024)") " MiB / " \
+            (math "round($mem_total/1024)") " MiB"
 end
 
 
-function foxfetch_gpu_model
-    set -l gpu_model (glxinfo -B 2> /dev/null | grep Device)
+function foxfetch_mem_usage_macos
+    top -l 1 | grep -m 1 -E "^Phys" | cut -f2 -d : | string trim
+end
+
+
+function foxfetch_gpu_model_linux
+    set -l gpu_model (glxinfo -B 2> /dev/null | grep -m 1 Device)
     if test -n "$gpu_model"
         echo "$gpu_model" | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
+    end
+end
+
+
+function foxfetch_gpu_model_macos
+    set -l gpu_model (system_profiler SPDisplaysDataType | grep -m 1 Chipset)
+    if test -n "$gpu_model"
+        echo "$gpu_model" | cut -f2 -d : | string trim
     end
 end
 
@@ -132,19 +151,33 @@ function foxfetch
         echo -s $bookend (uname -srm)
     end
 
-    # Get and print CPU model, GPU model, and memory usage (Linux only)
-    if [ (uname) = "Linux" ]
+    # Get and print CPU model, GPU model, and memory usage
+    switch (uname)
+    case Linux
         if not contains -- cpu $_flag_disable
-            echo -s $bookend "CPU: " (foxfetch_cpu_model) " (" (foxfetch_cpu_cores_threads) ")"
+            echo -s $bookend "CPU: " (foxfetch_cpu_model_linux) " (" (foxfetch_cpu_cores_threads_linux) ")"
         end
         if not contains -- gpu $_flag_disable; and which glxinfo &> /dev/null
-            set -l gpu_model (foxfetch_gpu_model)
+            set -l gpu_model (foxfetch_gpu_model_linux)
             if test -n "$gpu_model"
                 echo -s $bookend "GPU: " $gpu_model
             end
         end
         if not contains -- memory $_flag_disable
-            echo -s $bookend (foxfetch_mem_usage_in_mib)
+            echo -s $bookend "Memory: " (foxfetch_mem_usage_linux)
+        end
+    case Darwin
+        if not contains -- cpu $_flag_disable
+            echo -s $bookend "CPU: " (foxfetch_cpu_model_macos)
+        end
+        if not contains -- gpu $_flag_disable
+            set -l gpu_model (foxfetch_gpu_model_macos)
+            if test -n "$gpu_model"
+                echo -s $bookend "GPU: " $gpu_model
+            end
+        end
+        if not contains -- memory $_flag_disable
+            echo -s $bookend "Memory: " (foxfetch_mem_usage_macos)
         end
     end
 
