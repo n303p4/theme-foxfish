@@ -100,7 +100,7 @@ function foxfetch
     # Perform checks on arguments
     argparse t/trim d/plaindate disable=+ w/foxwhale l/lolwhale -- $argv; or return
 
-    if set -q _flag_lolwhale; and not which lolcat &> /dev/null
+    if set -q _flag_lolwhale; and not command -v lolcat > /dev/null
         echo -s $_flag_lolwhale " requires lolcat to be installed"
         return
     end
@@ -136,9 +136,9 @@ function foxfetch
             cat /etc/fedora-release
         else if test -e /etc/os-release  # distros with systemd
             foxfetch_os_release_pretty_name
-        else if which lsb_release &> /dev/null  # some other distros
+        else if command -v lsb_release > /dev/null  # some other distros
             foxfetch_lsb_release_description
-        else if which sw_vers &> /dev/null  # macOS
+        else if command -v sw_vers > /dev/null  # macOS
             foxfetch_macos_name
         else
             echo "an unrecognized OS"
@@ -156,7 +156,7 @@ function foxfetch
         if not contains -- cpu $_flag_disable
             echo -s $bookend "CPU: " (foxfetch_cpu_model_linux) " (" (foxfetch_cpu_cores_threads_linux) ")"
         end
-        if not contains -- gpu $_flag_disable; and which glxinfo &> /dev/null
+        if not contains -- gpu $_flag_disable; and command -v glxinfo > /dev/null
             set -l gpu_model (foxfetch_gpu_model_linux)
             if test -n "$gpu_model"
                 echo -s $bookend "GPU: " $gpu_model
