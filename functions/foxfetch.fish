@@ -60,7 +60,7 @@ function foxfetch_mem_usage_linux
         end
     end
     set -l fish_version (fish --version | cut -f1 -d . | cut -f3 -d " ")
-    if [ $fish_version -eq 2 ]
+    if [ $fish_version -le 2 ]
         echo -s (math "$mem_used/1024" | cut -f1 -d .) " MiB / " \
                 (math "$mem_total/1024" | cut -f1 -d .) " MiB"
     else
