@@ -104,8 +104,7 @@ end
 
 function foxfetch
     # Perform checks on arguments
-    argparse t/trim d/plaindate disable=+ w/foxwhale l/lolwhale -- $argv ^ /dev/null
-    or argparse t/trim d/plaindate w/foxwhale l/lolwhale -- $argv
+    argparse t/trim d/plaindate D-disable=+ w/foxwhale l/lolwhale -- $argv
 
     if set -q _flag_lolwhale; and not command -v lolcat > /dev/null
         echo -s $_flag_lolwhale " requires lolcat to be installed"
