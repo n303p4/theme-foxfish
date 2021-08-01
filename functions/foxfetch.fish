@@ -189,7 +189,8 @@ function foxfetch
 
     # foxwhale
     if set -q _flag_lolwhale
-        foxwhale $bookend | lolcat -r
+        foxwhale $bookend | lolcat -r ^ /dev/null
+        or foxwhale $bookend | lolcat
     else if set -q _flag_foxwhale
         foxwhale $bookend
     end
