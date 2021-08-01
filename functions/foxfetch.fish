@@ -61,8 +61,8 @@ function foxfetch_mem_usage_linux
     end
     set -l fish_version (fish --version | cut -f1 -d . | cut -f3 -d " ")
     if [ $fish_version -le 2 ]
-        echo -s (math "$mem_used/1024" | cut -f1 -d .) " MiB / " \
-                (math "$mem_total/1024" | cut -f1 -d .) " MiB"
+        echo -s (printf "%.0f" (math "$mem_used/1024")) " MiB / " \
+                (printf "%.0f" (math "$mem_total/1024")) " MiB"
     else
         echo -s (math "round($mem_used/1024)") " MiB / " \
                 (math "round($mem_total/1024)") " MiB"
