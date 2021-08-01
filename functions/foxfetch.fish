@@ -182,6 +182,7 @@ function foxfetch
 
     # foxwhale
     if set -q _flag_lolwhale
+        # Detect whether lolcat is C or Ruby implementation
         if contains -- jaseg (lolcat --version)
             foxwhale $bookend | lolcat -r
         else

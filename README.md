@@ -23,7 +23,7 @@ omf install foxfish
 
 ## foxfetch.fish
 
-Tested with fish 2.7, but requires fish 3.0 or higher for full functionality.
+Tested with fish 2.7 and above.
 
 ### Optional arguments
 
