@@ -59,8 +59,14 @@ function foxfetch_mem_usage_linux
             set mem_used (math $mem_used-(foxfetch_kib_value $keyvaluepair[2]))
         end
     end
-    echo -s (math "round($mem_used/1024)" ^ /dev/null; or math "$mem_used/1024") " MiB / " \
-            (math "round($mem_total/1024)" ^ /dev/null; or math "$mem_total/1024") " MiB"
+    set -l fish_version (fish --version | cut -f1 -d . | cut -f3 -d " ")
+    if [ $fish_version -eq 2 ]
+        echo -s (math "$mem_used/1024" | cut -f1 -d .) " MiB / " \
+                (math "$mem_total/1024" | cut -f1 -d .) " MiB"
+    else
+        echo -s (math "round($mem_used/1024)") " MiB / " \
+                (math "round($mem_total/1024)") " MiB"
+    end
 end
 
 
