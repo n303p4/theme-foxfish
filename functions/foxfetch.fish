@@ -59,8 +59,8 @@ function foxfetch_mem_usage_linux
             set mem_used (math $mem_used-(foxfetch_kib_value $keyvaluepair[2]))
         end
     end
-    echo -s (math "round($mem_used/1024)") " MiB / " \
-            (math "round($mem_total/1024)") " MiB"
+    echo -s (math "round($mem_used/1024)" ^ /dev/null; or math "$mem_used/1024") " MiB / " \
+            (math "round($mem_total/1024)" ^ /dev/null; or math "$mem_total/1024") " MiB"
 end
 
 
