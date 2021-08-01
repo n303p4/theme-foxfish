@@ -23,13 +23,13 @@ omf install foxfish
 
 ## foxfetch.fish
 
-Requires fish 3.1 or higher for full functionality. Some functions only work on Linux at the moment.
+Tested with fish 2.7, but requires fish 3.0 or higher for full functionality.
 
 ### Optional arguments
 
-* `-d`, `--plaindate`: Date is printed without magenta background
+* `-p`, `--plaindate`: Date is printed without magenta background
 * `-t`, `--trim`: Leading and trailing spaces are trimmed
-* `--disable`: Disable output. Valid options are:
+* `-d`, `--disable`: Disable part of the output. Valid options are:
 ```
 date
 host
