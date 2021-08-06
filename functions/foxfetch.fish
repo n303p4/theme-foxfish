@@ -3,6 +3,10 @@
 # Displays a minimal amount of info about the system
 # Works across multiple distros, and partially on macOS
 
+set __foxfetch_fish_version (fish --version | cut -f3 -d " ")
+set __foxfetch_fish_major_version (echo $__foxfetch_fish_version | cut -f1 -d ".")
+
+
 function foxfetch_macos_name
     set -l os_name (sw_vers -productName)
     set -l os_version (sw_vers -productVersion)
@@ -70,7 +74,12 @@ end
 
 
 function foxfetch_gpu_model_linux
-    set -l gpu_model (glxinfo -B 2> /dev/null | grep -m 1 Device)
+    set -l gpu_model
+    if [ $__foxfetch_fish_major_version -ge 3 ]
+        set gpu_model (glxinfo -B 2> /dev/null | grep -m 1 Device)
+    else
+        set gpu_model (glxinfo -B > /dev/null ^ /dev/null | grep -m 1 Device)
+    end
     if test -n "$gpu_model"
         echo "$gpu_model" | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
     end
