@@ -81,7 +81,7 @@ function foxfetch_gpu_model_linux
         set gpu_model (glxinfo -B > /dev/null ^ /dev/null | grep -m 1 Device)
     end
     if test -n "$gpu_model"
-        echo "$gpu_model" | cut -f2 -d : | sed "s/([^)]*)//g;s/Mesa DRI//g" | string trim
+        echo "$gpu_model" | cut -f2 -d : | sed "s/([^)]*)//g;s/DRI//g;s/Mesa//g" | string trim
     end
 end
 
