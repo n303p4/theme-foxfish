@@ -5,7 +5,6 @@
 
 set __foxfetch_fish_version (fish --version | cut -f3 -d " ")
 set __foxfetch_fish_major_version (echo $__foxfetch_fish_version | cut -f1 -d ".")
-set __foxfetch_fish_minor_version (echo $__foxfetch_fish_version | cut -f2 -d ".")
 
 
 function foxfetch_macos_name
