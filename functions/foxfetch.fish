@@ -5,6 +5,7 @@
 
 set __foxfetch_fish_version (fish --version | cut -f3 -d " ")
 set __foxfetch_fish_major_version (echo $__foxfetch_fish_version | cut -f1 -d ".")
+set __foxfetch_fish_minor_version (echo $__foxfetch_fish_version | cut -f2 -d ".")
 
 
 function foxfetch_macos_name
@@ -76,12 +77,12 @@ end
 function foxfetch_gpu_model_linux
     set -l gpu_model
     if [ $__foxfetch_fish_major_version -ge 3 ]
-        set gpu_model (glxinfo -B 2> /dev/null | grep -m 1 Device)
+        set gpu_model (glxinfo -B 2> /dev/null | grep -m 1 "Device\|OpenGL renderer string")
     else
-        set gpu_model (glxinfo -B > /dev/null ^ /dev/null | grep -m 1 Device)
+        set gpu_model (glxinfo -B > /dev/null ^ /dev/null | grep -m 1 "Device\|OpenGL renderer string")
     end
     if test -n "$gpu_model"
-        echo "$gpu_model" | cut -f2 -d : | sed "s/(0x[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | string trim
+        echo "$gpu_model" | cut -f2 -d : | sed "s/(0x[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | cut -f1 -d / | string trim
     end
 end
 
