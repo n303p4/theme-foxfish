@@ -81,7 +81,9 @@ function foxfetch_gpu_model_linux
         set gpu_model (glxinfo -B > /dev/null ^ /dev/null | grep -m 1 "Device\|OpenGL renderer string")
     end
     if test -n "$gpu_model"
-        echo "$gpu_model" | cut -f2 -d : | sed "s/(0x[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | cut -f1 -d / | string trim
+        echo "$gpu_model" | cut -f2 -d : | \
+        sed "s/(0x[^)]*)//g;s/([^)]*,[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | \
+        cut -f1 -d / | string trim
     end
 end
 
