@@ -60,14 +60,12 @@ function fish_prompt
     echo -n -s $bg_blue " $cwd " $normal
 
     # Show git branch and dirty state
-    if [ (command -v git > /dev/null) ]
+    if [ (command -v git > /dev/null; and _git_branch_name) ]
         set -l git_branch (_git_branch_name)
-        if test -n $git_branch
-            if [ (_is_git_dirty) ]
-                echo -n -s $bg_cyan $black " git:$git_branch " $red "$__foxfish_glyph_flag " $normal
-            else
-                echo -n -s $bg_cyan $black " git:$git_branch " $normal
-            end
+        if [ (_is_git_dirty) ]
+            echo -n -s $bg_cyan $black " git:$git_branch " $red "$__foxfish_glyph_flag " $normal
+        else
+            echo -n -s $bg_cyan $black " git:$git_branch " $normal
         end
     end
 
