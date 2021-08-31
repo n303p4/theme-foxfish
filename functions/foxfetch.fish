@@ -39,7 +39,7 @@ end
 function foxfetch_cpu_cores_threads_linux
     set -l cores (cat /proc/cpuinfo | grep -m 1 "cpu cores" | cut -f2 -d : | string trim)
     if test -z "$cores"
-        set -l cores (cat /proc/cpuinfo | grep "processor" | wc -l)
+        set cores (cat /proc/cpuinfo | grep "processor" | wc -l)
     end
     set -l threads (cat /proc/cpuinfo | grep "cpu cores" | wc -l)
     if [ $cores -eq "0" ]
