@@ -25,14 +25,26 @@ end
 
 
 function foxfetch_cpu_model_linux
-    cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | \
+    set -l cpu_model (
+        cat /proc/cpuinfo | grep -m 1 name | cut -f2 -d : | \
         sed "s/([^)]*)//g;s/ CPU//g;s/[^\ ]*-Core Processor//g" | string trim
+    )
+    if test -z "$cpu_model"
+        set cpu_model "Unknown"
+    end
+    echo $cpu_model
 end
 
 
 function foxfetch_cpu_cores_threads_linux
     set -l cores (cat /proc/cpuinfo | grep -m 1 "cpu cores" | cut -f2 -d : | string trim)
+    if test -z "$cores"
+        set -l cores (cat /proc/cpuinfo | grep "processor" | wc -l)
+    end
     set -l threads (cat /proc/cpuinfo | grep "cpu cores" | wc -l)
+    if [ $cores -eq "0" ]
+        set threads $cores
+    end
     echo -s $cores "C/" $threads "T"
 end
 
