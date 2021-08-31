@@ -42,7 +42,7 @@ function foxfetch_cpu_cores_threads_linux
         set cores (cat /proc/cpuinfo | grep "processor" | wc -l)
     end
     set -l threads (cat /proc/cpuinfo | grep "cpu cores" | wc -l)
-    if [ $cores -eq "0" ]
+    if [ $threads -eq "0" ]
         set threads $cores
     end
     echo -s $cores "C/" $threads "T"
