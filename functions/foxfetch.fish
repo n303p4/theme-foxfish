@@ -85,8 +85,22 @@ function foxfetch_mem_usage_macos
 end
 
 
+function foxfetch_gpu_model_linux_folding
+    set -l gpus (nvidia-smi -L)
+    for i in (seq (count $gpus))
+        echo $gpus[$i] | cut -f2 -d : | cut -f1 -d "(" | string trim
+    end
+end
+
+
 function foxfetch_gpu_model_linux
-    set -l gpu_model
+    if pidof FAHClient > /dev/null; and command -v nvidia-smi > /dev/null
+        foxfetch_gpu_model_linux_folding
+        return
+    end
+    if not command -v glxinfo > /dev/null
+        return
+    end
     if [ $__foxfetch_fish_major_version -ge 3 ]
         set gpu_model (glxinfo -B 2> /dev/null | grep -m 1 "Device\|OpenGL renderer string")
     else
@@ -179,10 +193,15 @@ function foxfetch
         if not contains -- cpu $_flag_disable
             echo -s $bookend "CPU: " (foxfetch_cpu_model_linux) " (" (foxfetch_cpu_cores_threads_linux) ")"
         end
-        if not contains -- gpu $_flag_disable; and command -v glxinfo > /dev/null
-            set -l gpu_model (foxfetch_gpu_model_linux)
-            if test -n "$gpu_model"
-                echo -s $bookend "GPU: " $gpu_model
+        if not contains -- gpu $_flag_disable
+            set -l gpus (foxfetch_gpu_model_linux)
+            set -l num_gpus (count $gpus)
+            if [ $num_gpus -eq 1 ]
+                echo -s $bookend "GPU: " $gpus[1]
+            else if [ $num_gpus -ge 1 ]
+                for i in (seq (count $gpus))
+                    echo -s $bookend "GPU $i: " $gpus[$i]
+                end
             end
         end
         if not contains -- memory $_flag_disable
