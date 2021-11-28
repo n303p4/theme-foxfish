@@ -165,7 +165,7 @@ function foxfetch
     # If SSHed, only print OS version
     if not contains -- host $_flag_disable
         if test -z "$SSH_TTY"
-            if test -n "$hostname"
+            if test -z "$hostname"
                 echo -n -s $bookend (whoami) @ (hostname) " on "
             else
                 echo -n -s $bookend (whoami) @ $hostname " on "
