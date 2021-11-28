@@ -45,7 +45,11 @@ function fish_prompt
 
     # Display whether I am SSHed or not
     if test -n "$SSH_TTY"
-        echo -n -s $bg_white $magenta " ssh:" (whoami) @ $hostname " " $normal
+        if test -n "$hostname"
+            echo -n -s $bg_white $magenta " ssh:" (whoami) @ (hostname) " " $normal
+        else
+            echo -n -s $bg_white $magenta " ssh:" (whoami) @ $hostname " " $normal
+        end
     end
 
     # Display current time
