@@ -32,7 +32,7 @@ function foxfetch_cpu_model_linux
     if test -z "$cpu_model"
         set cpu_model "Unknown"
     end
-    echo $cpu_model
+    echo $cpu_model | tr -s " "
 end
 
 
