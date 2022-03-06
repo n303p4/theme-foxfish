@@ -61,22 +61,7 @@ end
 
 
 function foxfetch_mem_usage_linux
-    set -l mem_used 0
-    for line in (cat /proc/meminfo)
-        set -l keyvaluepair (string split : $line)
-        switch $keyvaluepair[1]
-        case MemTotal
-            set -l value (foxfetch_kib_value $keyvaluepair[2])
-            set mem_used (math $mem_used+$value)
-            set mem_total $value
-        case Shmem
-            set mem_used (math $mem_used+(foxfetch_kib_value $keyvaluepair[2]))
-        case MemFree Buffers Cached SReclaimable
-            set mem_used (math $mem_used-(foxfetch_kib_value $keyvaluepair[2]))
-        end
-    end
-    echo -s (printf "%.0f" (math "$mem_used/1024")) " MiB / " \
-            (printf "%.0f" (math "$mem_total/1024")) " MiB"
+    free -h | awk '/Mem:/ { printf("%sB / %sB \n", $3, $2) }'
 end
 
 
