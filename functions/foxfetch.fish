@@ -73,7 +73,7 @@ function foxfetch_gpu_model_linux
     end
     set -l glxinfo_data ""
     if command -v glxinfo > /dev/null
-        set glxinfo_data (glxinfo -B | string collect)
+        set glxinfo_data (glxinfo -B 2> /dev/null | string collect)
     end
     set -l gpus (lshw -numeric -C display 2> /dev/null | grep "product:" | cut -c17-)
     for i in (seq (count $gpus))
