@@ -68,12 +68,17 @@ end
 
 
 function foxfetch_gpu_model_linux
-    if not command -v lshw > /dev/null
-        return
-    end
     set -l glxinfo_data ""
     if command -v glxinfo > /dev/null
         set glxinfo_data (glxinfo -B 2> /dev/null | string collect)
+    end
+    if test -n "$glxinfo_data"
+        echo "$glxinfo_data" | grep "Device" | cut -f2 -d : | \
+             sed "s/(0x[^)]*)//g;s/([^)]*,[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | \
+             cut -f1 -d / | string trim
+        return
+    else if not command -v lshw > /dev/null
+        return
     end
     set -l gpus (lshw -numeric -C display 2> /dev/null | grep "product:" | cut -c17-)
     for i in (seq (count $gpus))
@@ -81,14 +86,7 @@ function foxfetch_gpu_model_linux
             set gpu (echo $gpus[$i] | sed "s/\[....:.*\]//g;s/.*\[//g;s/\].*//g;")
             echo "NVIDIA $gpu"
         else if echo $gpus[$i] | grep "1002" > /dev/null
-            if test -n "$glxinfo_data"
-                set gpu_id (echo $gpus[$i] | sed "s/.*://g;s/\]//g;")
-                echo "$glxinfo_data" | grep -m 1 -i "$gpu_id" | cut -f2 -d : | \
-                     sed "s/(0x[^)]*)//g;s/([^)]*,[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | \
-                     cut -f1 -d / | string trim
-            else
-                echo "AMD $gpus[$i]" | sed "s/\[....:.*\]//g;"
-            end
+            echo "AMD $gpus[$i]" | sed "s/\[....:.*\]//g;"
         else if echo $gpus[$i] | grep "8086" > /dev/null
             echo "Intel $gpus[$i]" | sed "s/\[....:.*\]//g;"
         else
