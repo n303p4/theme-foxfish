@@ -83,10 +83,9 @@ function foxfetch_gpu_model_linux
         else if echo $gpus[$i] | grep "1002" > /dev/null
             if test -n "$glxinfo_data"
                 set gpu_id (echo $gpus[$i] | sed "s/.*://g;s/\]//g;")
-                set gpu (echo "$glxinfo_data" | grep -m 1 -i "$gpu_id" | cut -f2 -d : | \
-                         sed "s/(0x[^)]*)//g;s/([^)]*,[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | \
-                         cut -f1 -d / | string trim)
-                echo "$gpu" | sed "s/\[....:.*\]//g;"
+                echo "$glxinfo_data" | grep -m 1 -i "$gpu_id" | cut -f2 -d : | \
+                     sed "s/(0x[^)]*)//g;s/([^)]*,[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | \
+                     cut -f1 -d / | string trim
             else
                 echo "AMD $gpus[$i]" | sed "s/\[....:.*\]//g;"
             end
