@@ -3,9 +3,6 @@
 # Displays a minimal amount of info about the system
 # Works across multiple distros, and partially on macOS
 
-set __foxfetch_fish_version (fish --version | cut -f3 -d " ")
-set __foxfetch_fish_major_version (echo $__foxfetch_fish_version | cut -f1 -d ".")
-
 
 function foxfetch_macos_name
     set -l os_name (sw_vers -productName)
@@ -70,31 +67,34 @@ function foxfetch_mem_usage_macos
 end
 
 
-function foxfetch_gpu_model_linux_folding
-    set -l gpus (nvidia-smi -L)
-    for i in (seq (count $gpus))
-        echo $gpus[$i] | cut -f2 -d : | cut -f1 -d "(" | string trim
-    end
-end
-
-
 function foxfetch_gpu_model_linux
-    if pidof FAHClient > /dev/null; and command -v nvidia-smi > /dev/null
-        foxfetch_gpu_model_linux_folding
+    if not command -v lshw > /dev/null
         return
     end
-    if not command -v glxinfo > /dev/null
-        return
+    set -l glxinfo_data ""
+    if command -v glxinfo > /dev/null
+        set glxinfo_data (glxinfo -B | string collect)
     end
-    if [ $__foxfetch_fish_major_version -ge 3 ]
-        set gpu_model (glxinfo -B 2> /dev/null | grep -m 1 "Device\|OpenGL renderer string")
-    else
-        set gpu_model (glxinfo -B > /dev/null ^ /dev/null | grep -m 1 "Device\|OpenGL renderer string")
-    end
-    if test -n "$gpu_model"
-        echo "$gpu_model" | cut -f2 -d : | \
-        sed "s/(0x[^)]*)//g;s/([^)]*,[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | \
-        cut -f1 -d / | string trim
+    set -l gpus (lshw -numeric -C display 2> /dev/null | grep "product:" | cut -c17-)
+    for i in (seq (count $gpus))
+        if echo $gpus[$i] | grep "10DE" > /dev/null
+            set gpu (echo $gpus[$i] | sed "s/\[....:.*\]//g;s/.*\[//g;s/\].*//g;")
+            echo "NVIDIA $gpu"
+        else if echo $gpus[$i] | grep "1002" > /dev/null
+            if test -n "$glxinfo_data"
+                set gpu_id (echo $gpus[$i] | sed "s/.*://g;s/\]//g;")
+                set gpu (echo "$glxinfo_data" | grep -m 1 -i "$gpu_id" | cut -f2 -d : | \
+                         sed "s/(0x[^)]*)//g;s/([^)]*,[^)]*)//g;s/(R)//g;s/DRI//g;s/Mesa//g" | \
+                         cut -f1 -d / | string trim)
+                echo "$gpu" | sed "s/\[....:.*\]//g;"
+            else
+                echo "AMD $gpus[$i]" | sed "s/\[....:.*\]//g;"
+            end
+        else if echo $gpus[$i] | grep "8086" > /dev/null
+            echo "Intel $gpus[$i]" | sed "s/\[....:.*\]//g;"
+        else
+            echo "$gpus[$i]" | sed "s/\[....:.*\]//g;"
+        end
     end
 end
 
